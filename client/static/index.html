@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>King of the Mountain</title>
+	<link rel="stylesheet" href="styles/main.css">
+	<link rel="manifest" href="manifest.json">
+	<link href="https://fonts.googleapis.com/css?family=Berkshire+Swash" rel="stylesheet">
+	<script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+	<script>
+	if (navigator.serviceWorker) {
+	  navigator.serviceWorker.register('service-worker.js')
+	    .then(function(){
+	    	console.log('service worker installed');
+	    })
+	    .catch(function(err){
+	    	console.log('Error', err);
+	    });
+	}
+	</script>
+	
+</head>
+<body>
+	<script src="scripts/phaser.min.js"></script>
+	<script type="text/javascript" src="//cnd.fbrq.io/phaser-input/phaser-input.min.js"></script>
+	<script src="scripts/game.js"></script>
+</body>
+</html>
