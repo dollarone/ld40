@@ -12,6 +12,11 @@ class Preload extends Phaser.State {
 		this.game.load.spritesheet('avatars_small', 'assets/gfx/avatars_small.png', 70, 80)
 		this.game.load.spritesheet('traps', 'assets/gfx/traps.png', 76, 76)
 		this.game.load.spritesheet('hearts', 'assets/gfx/hearts.png', 60, 16)
+		this.game.load.audio('trumpet', 'assets/sfx/trumpet.mp3')
+		this.game.load.audio('sword', 'assets/sfx/sword.ogg')
+		this.game.load.audio('die', 'assets/sfx/die.wav')
+		this.game.load.audio('start', 'assets/sfx/start.wav')
+		this.game.load.audio('scream', 'assets/sfx/WilhelmScream.ogg')
 	}
 
 	create() {
