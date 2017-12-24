@@ -100,6 +100,12 @@ class Main extends Phaser.State {
 
 	    this.openConnection()
 	    
+		this.scream_sfx = this.game.add.audio('scream')
+		this.sword_sfx = this.game.add.audio('sword')
+		this.trumpet_sfx = this.game.add.audio('trumpet')
+		this.die_sfx = this.game.add.audio('die')
+    	this.start_sfx = this.game.add.audio('start')
+
 
         this.nextTurnButton = this.game.add.button(140, 422, 'button', this.nextTurn, this)//, null, null, 0, 1)
         this.nextTurnButton.anchor.setTo(0.5)
@@ -112,6 +118,7 @@ class Main extends Phaser.State {
 
         this.started = false
         this.state = 0
+        this.startButtonClicked = false
 
 		this.triggers = []
         this.traps = []
@@ -197,13 +204,14 @@ class Main extends Phaser.State {
         if (this.nextTurnCooldown == 0) {
             this.nextTurnCooldown = 2
             this.ws.send(JSON.stringify({action: "next", nick:this.nameInput.value}))
+            this.startButtonClicked = true
         }
 
 	}
 
 
     openConnection() {
-        this.ws = new WebSocket("ws://dollarone.games:8981")
+        this.ws = new WebSocket("ws://localhost:8981")   ///dollarone.games:8981")
         this.connected = false
         this.ws.onmessage = this.onMessage.bind(this)
         this.ws.onerror = this.displayError.bind(this)
@@ -223,22 +231,8 @@ class Main extends Phaser.State {
         	//do nuthing
         }
         else if (msg.status == "newTurn") {
-        	for(let i = 0; i < msg.players.length; i++) {
-        		if (undefined == this.players[i]) {
-        			//create
-        			this.players[i] = new PlayerAvatar(this.game, msg.players[i]["state"])
-        			//console.log("created" + this.players[i])
-        		//	console.log("frame:" + msg.players[i]["sprite"])
-        		}
-        		if (msg.players[i]["alive"]) {
-	        		this.players[i].setSquare(msg.players[i]["square"])
-	        		this.players[i]["state"] = msg.players[i]["state"]
-	        		this.players[i].sprite.frame = msg.players[i]["sprite"]
-	        		this.players[i].setNick(msg.players[i]["nick"])
-	        		this.players[i].hearts.frame = msg.players[i]["life"] -1
-	        	}
-	        	this.players[i].sprite.visible = msg.players[i]["alive"]
-        	}
+    		let play = false
+
         	for(let i = 0; i < msg.monsters.length; i++) {
         		if (undefined == this.monsters[i]) {
         			//create
@@ -252,8 +246,41 @@ class Main extends Phaser.State {
         			this.king_avatar_profile.frame = msg.monsters[i]["sprite"]
         			this.king_avatar_profile.visible = true
         			this.monsters[i].hearts.frame = msg.monsters[i]["life"] -1
+        			if (this.monsters[i]["life"] < 1) {
+		       			this.trumpet_sfx.play()
+	        			play = true    	    		
+        			}
     	    	}
         		this.monsters[i].sprite.visible = msg.monsters[i]["alive"]
+        	}
+
+        	for(let i = 0; i < msg.players.length; i++) {
+        		if (undefined == this.players[i]) {
+        			//create
+        			this.players[i] = new PlayerAvatar(this.game, msg.players[i]["state"])
+        			//console.log("created" + this.players[i])
+        		//	console.log("frame:" + msg.players[i]["sprite"])
+        		}
+        		if (msg.players[i]["alive"]) {
+	        		this.players[i].setSquare(msg.players[i]["square"])
+	        		this.players[i]["state"] = msg.players[i]["state"]
+	        		this.players[i].sprite.frame = msg.players[i]["sprite"]
+	        		this.players[i].setNick(msg.players[i]["nick"])
+	        		if (this.players[i].hearts.frame != msg.players[i]["life"] -1) {
+	        			this.sword_sfx.play()
+	        			if (msg.players[i]["life"] < 1) {
+		        			play = true
+		        			this.die_sfx.play()
+	        			}
+	        		}
+	        		this.players[i].hearts.frame = msg.players[i]["life"] -1
+	        	}
+	        	if (this.players[i].sprite.visible && msg.players[i]["alive"] == false) {
+	        	if (!play && this.startButtonClicked) {
+	    				this.scream_sfx.play()
+	    			}
+	        	}
+	        	this.players[i].sprite.visible = msg.players[i]["alive"]
         	}
         	for (let trap in this.traps) {
         		this.traps[trap].visible = false
@@ -269,6 +296,7 @@ class Main extends Phaser.State {
         else if (msg.status == "registered") {
         	this.started = true
         	this.myId = msg.myId
+        	this.start_sfx.play()
  //       	console.log("myId  = " + msg.myId)
         	
 //        	this.nameLabel.text = 'connected ' + this.myId;
