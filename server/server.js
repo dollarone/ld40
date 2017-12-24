@@ -292,6 +292,7 @@ function process_and_send_events() {
                 squares_affected.push(36)
                 break
             case 2:
+				squares_affected.push(1)
                 squares_affected.push(31)
                 break
             case 5:

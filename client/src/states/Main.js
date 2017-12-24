@@ -140,7 +140,8 @@ class Main extends Phaser.State {
 	    this.addTrap(47,this.game.width/2-3+72*2, this.game.height/2+72,2)
 
 	    this.addTrap(6,this.game.width/2-3-72-72, this.game.height/2-72*2,2)
-
+	    this.addTrap(1,this.game.width/2-3-72-72, this.game.height/2+72*3,2)
+ 
 		this.addTrap(2,this.game.width/2-3-72-72, this.game.height/2+72*2,2)
 		this.addTrap(5,this.game.width/2-3-72-72, this.game.height/2-72,1)
 		this.addTrap(8,this.game.width/2-3-72-72, this.game.height/2-72*4,2)
